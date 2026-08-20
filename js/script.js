@@ -137,22 +137,12 @@ const CONFIG = {
     titulo: "Nuestra canción",
   },
 
-  // --------------------------------------------------------------
-  // EMAILJS — necesario para el botón "Canjear mis cupones"
-  // --------------------------------------------------------------
-  // 1. Crea una cuenta gratuita en https://www.emailjs.com
-  // 2. Conecta tu correo como "Email Service" y copia el Service ID
-  // 3. Crea un "Email Template" con variables {{cupones}} y {{fecha}}
-  //    y copia el Template ID
-  // 4. En "Account" copia tu Public Key
-  // Reemplaza los 3 valores de abajo. Sin esto, el envío no funcionará.
-  emailjs: {
-    publicKey: "TU_PUBLIC_KEY_AQUI",
-    serviceId: "TU_SERVICE_ID_AQUI",
-    templateId: "TU_TEMPLATE_ID_AQUI",
-    // Si tu plantilla de EmailJS usa un campo fijo "to_email" en vez de
-    // definir el destinatario dentro del Email Service, ponlo aquí:
-    correoDestino: "tu-correo@ejemplo.com",
+  /* ---------------------------------------------------------------
+   WhatsApp config
+--------------------------------------------------------------- */
+  whatsapp: {
+    numero: "4521004766", // Formato: código país + número (sin + ni espacios)
+    // Ejemplo México: 521xxxxxxxxxx, España: 34xxxxxxxxxx, etc.
   },
 };
 
@@ -161,7 +151,6 @@ const CONFIG = {
    ================================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
-  initEmailJs();
   renderNamesAndDates();
   renderHistoria();
   renderCartaEmocional();
@@ -185,19 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initTopButton();
   initCouponRedeem();
 });
-
-/* ---------------------------------------------------------------
-   EmailJS init
---------------------------------------------------------------- */
-function initEmailJs() {
-  if (window.emailjs && CONFIG.emailjs.publicKey) {
-    try {
-      emailjs.init({ publicKey: CONFIG.emailjs.publicKey });
-    } catch (e) {
-      console.warn("EmailJS no pudo inicializarse todavía:", e);
-    }
-  }
-}
 
 /* ---------------------------------------------------------------
    Nombres y fechas dinámicos
@@ -1229,7 +1205,7 @@ function initTopButton() {
 }
 
 /* ---------------------------------------------------------------
-   Selección y envío de cupones
+   Selección y envío de cupones por WhatsApp
 --------------------------------------------------------------- */
 function initCouponRedeem() {
   const grid = document.getElementById("couponGrid");
@@ -1239,6 +1215,7 @@ function initCouponRedeem() {
 
   const selected = new Set();
 
+  // Touch-friendly selection for mobile
   grid.addEventListener("click", (e) => {
     const card = e.target.closest(".coupon");
     if (!card) return;
@@ -1249,67 +1226,46 @@ function initCouponRedeem() {
     else selected.delete(title);
 
     redeemBtn.disabled = selected.size === 0;
+    redeemBtn.setAttribute("aria-pressed", selected.size > 0);
   });
 
-  redeemBtn.addEventListener("click", async () => {
+  // Also support keyboard navigation
+  grid.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      const card = e.target.closest(".coupon");
+      if (card) {
+        e.preventDefault();
+        card.click();
+      }
+    }
+  });
+
+  redeemBtn.addEventListener("click", () => {
     if (selected.size === 0) return;
 
-    redeemBtn.classList.add("is-sending");
-    redeemBtn.textContent = "Enviando...";
-    status.textContent = "";
-
-    const cuponesTexto = Array.from(selected).join(", ");
+    const cuponesTexto = Array.from(selected).join("%0A• "); // Newline + bullet for WhatsApp
     const fecha = new Date().toLocaleDateString("es-MX", {
       year: "numeric", month: "long", day: "numeric",
     });
 
-    try {
-      await enviarCupones(cuponesTexto, fecha);
-      status.textContent = "¡Listo! Tus cupones han sido enviados ❤";
-      redeemBtn.textContent = "Enviado ❤";
-    } catch (err) {
-      console.error("Error enviando cupones:", err);
-      status.textContent =
-        "No se pudo enviar automáticamente. Revisa la configuración de EmailJS en js/script.js.";
+    const mensaje = `🎁 *Cupones seleccionados* (%{fecha})%0A%0A• ${cuponesTexto}%0A%0A— Con amor ❤`
+      .replace("%{fecha}", encodeURIComponent(fecha));
+
+    const numero = CONFIG.whatsapp.numero;
+    const url = `https://wa.me/${numero}?text=${mensaje}`;
+
+    redeemBtn.classList.add("is-sending");
+    redeemBtn.textContent = "Abriendo WhatsApp...";
+    status.textContent = "";
+
+    // Open WhatsApp
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    // Reset button after short delay
+    setTimeout(() => {
       redeemBtn.classList.remove("is-sending");
       redeemBtn.textContent = "Canjear mis cupones ❤";
-    }
-  });
-}
-
-/**
- * Envía los cupones seleccionados por correo usando EmailJS.
- * Requiere haber configurado CONFIG.emailjs (publicKey, serviceId, templateId).
- *
- * La plantilla de EmailJS debe tener, como mínimo, las variables:
- *   {{cupones}}  -> lista de cupones seleccionados
- *   {{fecha}}    -> fecha del canje
- *   {{to_email}} -> (opcional, si tu plantilla lo requiere)
- */
-async function enviarCupones(cuponesTexto, fecha) {
-  const { publicKey, serviceId, templateId, correoDestino } = CONFIG.emailjs;
-
-  const sinConfigurar =
-    !window.emailjs ||
-    publicKey.includes("TU_") ||
-    serviceId.includes("TU_") ||
-    templateId.includes("TU_");
-
-  if (sinConfigurar) {
-    // EmailJS no está configurado todavía: no lo tratamos como error fatal,
-    // solo avisamos en consola y dejamos ver el mensaje de confirmación
-    // para no romper la experiencia mientras el dueño de la página
-    // termina de configurar sus credenciales.
-    console.warn(
-      "EmailJS no está configurado. Edita CONFIG.emailjs en js/script.js con tus credenciales reales."
-    );
-    return Promise.resolve();
-  }
-
-  return emailjs.send(serviceId, templateId, {
-    cupones: cuponesTexto,
-    fecha: fecha,
-    to_email: correoDestino,
-    nombre_pareja: CONFIG.pareja.nombreElla,
+      status.textContent = "¡Se abrió WhatsApp con tus cupones! 💌";
+    }, 1500);
   });
 }
