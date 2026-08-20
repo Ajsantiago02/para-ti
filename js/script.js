@@ -15,7 +15,7 @@ const CONFIG = {
   pareja: {
     nombreYo: "Alfredo",
     nombreElla: "Montse",
-    fechaInicio: "18 de junio, 2026", // fecha en que empezaron
+    fechaInicio: "20 de junio, 2026", // fecha en que empezaron
   },
 
   // --------------------------------------------------------------
