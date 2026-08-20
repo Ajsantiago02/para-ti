@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dos meses — nuestra pequeña película</title>
+<meta name="description" content="Una experiencia interactiva sobre nosotros." />
+
+<!-- ============================================================ -->
+<!-- TIPOGRAFÍAS — Cormorant Garamond (display) + Jost (texto)     -->
+<!-- ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- ============================================================ -->
+<!-- EmailJS — usado en la sección de cupones (paso 9 del brief)   -->
+<!-- ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<!-- Textura de grano de película, muy sutil, sobre toda la página -->
+<div class="film-grain" aria-hidden="true"></div>
+
+<!-- Barras tipo "letterbox" de cine — aparecen en transiciones -->
+<div class="letterbox letterbox-top" aria-hidden="true"></div>
+<div class="letterbox letterbox-bottom" aria-hidden="true"></div>
+
+<!-- Barra de progreso de scroll -->
+<div class="progress-track" aria-hidden="true">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<!-- Cursor personalizado (solo desktop, ver script.js) -->
+<div class="custom-cursor" id="customCursor" aria-hidden="true"></div>
+
+<!-- Canvas para las luciérnagas / partículas de luz -->
+<canvas id="particles" aria-hidden="true"></canvas>
+
+<!-- Canvas para fuegos artificiales -->
+<canvas id="fireworks" aria-hidden="true"></canvas>
+
+<!-- Contenedor para lluvia de corazones (DOM-based para mejor performance) -->
+<div id="hearts-rain" aria-hidden="true"></div>
+
+<!-- Estela de scroll emotiva -->
+<div class="scroll-trail" id="scrollTrail" aria-hidden="true"></div>
+
+<!-- Destellos emocionales en momentos clave -->
+<div class="emotional-burst" id="emotionalBurst" aria-hidden="true"></div>
+
+<!-- ============================================================ -->
+<!-- 1. PANTALLA DEL SOBRE                                          -->
+<!-- ============================================================ -->
+<section id="envelopeScreen" class="envelope-screen">
+  <div class="envelope-scene">
+    <p class="envelope-hint">Tengo algo para ti...</p>
+
+    <button class="envelope" id="envelopeBtn" aria-label="Abrir el sobre">
+      <span class="envelope-back"></span>
+      <span class="envelope-flap"></span>
+      <span class="envelope-letter">
+        <!-- CARTA DEL SOBRE — edita el texto en CONFIG.sobre.cartaLineas dentro de js/script.js -->
+        <span class="envelope-letter-content" id="envelopeLetterContent"></span>
+      </span>
+      <span class="envelope-front"></span>
+      <span class="envelope-seal">❤</span>
+    </button>
+
+    <p class="envelope-sub" id="envelopeSub">toca el sobre</p>
+
+    <button class="enter-btn" id="enterBtn">
+      <span>Entrar a nuestra historia</span>
+      <span class="enter-btn-arrow">→</span>
+    </button>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CONTENIDO PRINCIPAL — oculto hasta abrir el sobre              -->
+<!-- ============================================================ -->
+<main id="mainContent" class="main-content" aria-hidden="true">
+
+  <!-- Botón flotante de música -->
+  <button class="music-btn" id="musicBtn" aria-label="Reproducir música">
+    <span class="music-icon" id="musicIcon">▶</span>
+    <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+
+  <!-- Botón volver arriba -->
+  <button class="top-btn" id="topBtn" aria-label="Volver arriba">↑</button>
+
+  <!-- Reproductor de audio real, oculto -->
+  <!-- ▶️ COLOCA TU CANCIÓN EN: assets/music/cancion.mp3 -->
+  <audio id="bgMusic" loop preload="none">
+    <source src="assets/music/cancion.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 01 — INTRO                                            -->
+  <!-- ========================================================== -->
+  <section class="scene scene-intro" id="scene-intro">
+    <span class="scene-tag">Escena 01 — El comienzo</span>
+    <div class="intro-lines">
+      <h1 class="intro-line intro-line-1" data-reveal>Dos meses<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></h1>
+      <h2 class="intro-line intro-line-2" data-reveal>y todavía siento que apenas estamos comenzando.</h2>
+    </div>
+    <div class="scroll-cue" id="scrollCue">
+      <span>desliza para continuar</span>
+      <span class="scroll-cue-line"></span>
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 02 — NUESTRA HISTORIA (scrollytelling)                -->
+  <!-- ========================================================== -->
+  <section class="scene scene-historia" id="scene-historia">
+    <span class="scene-tag">Escena 02 — Nuestra historia</span>
+    <h2 class="scene-title" data-reveal>Cómo empezó todo</h2>
+
+    <!-- Los bloques de historia se generan desde CONFIG.historia en js/script.js -->
+    <div class="historia-track" id="historiaTrack"></div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 03 — CARTA VISUAL / LO QUE HAS SIGNIFICADO             -->
+  <!-- ========================================================== -->
+  <section class="scene scene-carta" id="scene-carta">
+    <span class="scene-tag">Escena 03 — Lo que has significado para mí</span>
+    <div class="carta-emocional" id="cartaEmocional">
+      <!-- Párrafos generados desde CONFIG.cartaEmocional en js/script.js -->
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 04 — MOMENTOS (galería interactiva)                    -->
+  <!-- ========================================================== -->
+  <section class="scene scene-momentos" id="scene-momentos">
+    <span class="scene-tag">Escena 04 — Momentos</span>
+    <h2 class="scene-title" data-reveal>Pequeños fragmentos nuestros</h2>
+    <p class="scene-subtitle" data-reveal>Toca cualquier foto para verla mejor.</p>
+
+    <!-- Polaroids generadas desde CONFIG.momentos en js/script.js -->
+    <div class="polaroid-field" id="polaroidField"></div>
+  </section>
+
+  <!-- Visor ampliado de foto (lightbox simple) -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">✕</button>
+    <figure class="lightbox-figure">
+      <img src="" alt="" id="lightboxImg">
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 05 — VIDEO FINAL                                       -->
+  <!-- ========================================================== -->
+  <section class="scene scene-video" id="scene-video">
+    <span class="scene-tag">Escena 05 — Todavía me faltaba decirte algo</span>
+    <h2 class="scene-title" data-reveal id="videoIntroText">Y todavía me faltaba decirte algo...</h2>
+
+    <div class="video-frame" data-reveal id="videoFrame">
+      <!-- 🎬 Este contenedor se llena desde js/script.js según CONFIG.video.fuente:
+           'local'   -> usa assets/video/final.mp4
+           'youtube' -> incrusta un video de YouTube (CONFIG.video.youtubeId) -->
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 06 — CARTA FINAL                                       -->
+  <!-- ========================================================== -->
+  <section class="scene scene-final-letter" id="scene-final-letter">
+    <span class="scene-tag">Escena 06 — Gracias</span>
+    <div class="final-letter" id="finalLetter">
+      <!-- Párrafos generados desde CONFIG.cartaFinal en js/script.js -->
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- ESCENA 07 — CUPONES SORPRESA                                  -->
+  <!-- ========================================================== -->
+  <section class="scene scene-cupones" id="scene-cupones">
+    <span class="scene-tag">Escena 07 — Un pequeño regalo</span>
+    <h2 class="scene-title" data-reveal>Tengo algunos regalos para ti...</h2>
+    <p class="scene-subtitle" data-reveal>Elige los que quieras. Podemos usarlos cuando tú digas.</p>
+
+    <!-- Cupones generados desde CONFIG.cupones en js/script.js -->
+    <div class="coupon-grid" id="couponGrid"></div>
+
+    <button class="redeem-btn" id="redeemBtn" disabled>
+      Canjear mis cupones ❤
+    </button>
+    <p class="redeem-status" id="redeemStatus" role="status" aria-live="polite"></p>
+  </section>
+
+  <footer class="closing-footer">
+    <p id="footerNames"></p>
+    <p class="footer-date" id="footerDate"></p>
+  </footer>
+
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>

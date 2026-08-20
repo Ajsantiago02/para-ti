@@ -1,0 +1,22 @@
+Coloca aquí tus fotografías con estos nombres (o cambia las rutas en js/script.js, dentro de CONFIG):
+
+Sección "Nuestra historia":
+- historia-1.jpg
+- historia-2.jpg
+- historia-3.jpg
+- historia-4.jpg
+
+Sección "Momentos" (galería de polaroids):
+- momento-1.jpg
+- momento-2.jpg
+- momento-3.jpg
+- momento-4.jpg
+- momento-5.jpg
+- momento-6.jpg
+
+Recomendación: fotos en formato .jpg o .webp, no más de 1500px de ancho,
+para que la página cargue rápido en el celular de ella.
+
+Mientras no coloques una foto, la página mostrará automáticamente un
+recuadro con el nombre del archivo que falta, así sabrás exactamente
+qué colocar y dónde.
