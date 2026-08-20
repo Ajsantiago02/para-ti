@@ -13,8 +13,8 @@ const CONFIG = {
   // DATOS GENERALES
   // --------------------------------------------------------------
   pareja: {
-    nombreYo: "Tu nombre",
-    nombreElla: "Su nombre",
+    nombreYo: "Alfredo",
+    nombreElla: "Montse",
     fechaInicio: "18 de junio, 2026", // fecha en que empezaron
   },
 
@@ -49,18 +49,18 @@ const CONFIG = {
   historia: [
     {
       imagen: "assets/images/historia-1.jpg",
-      eyebrow: "Ese día",
+      eyebrow: "Ese día: nos hicimos novios",
       texto: "Todo empezó de una forma que ninguno de los dos esperaba, y sin embargo se sintió exactamente como debía sentirse.",
     },
     {
       imagen: "assets/images/historia-2.jpg",
-      eyebrow: "Nuestra primera cita",
-      texto: "Recuerdo cada detalle: de qué hablamos, cómo te reíste, y lo fácil que fue sentirme yo mismo contigo.",
+      eyebrow: "Cuando te volví a ver",
+      texto: "Recuerdo perfectamente aquel momento: tu abrazo, ese beso en la mejilla y esa sensación de que, después de tantos años, la vida nos estaba dando una segunda oportunidad.",
     },
     {
       imagen: "assets/images/historia-3.jpg",
       eyebrow: "Uno de mis recuerdos favoritos",
-      texto: "Hay momentos pequeños que se quedan grabados para siempre. Este es uno de los míos contigo.",
+      texto: "Hay momentos unicos y especiales que quedan grabados para siempre. Este es uno de los míos contigo.",
     },
     {
       imagen: "assets/images/historia-4.jpg",
@@ -76,8 +76,8 @@ const CONFIG = {
   // párrafos para resaltar palabras (ya están soportados en el CSS).
   cartaEmocional: [
     "Estos dos meses contigo me han enseñado algo que no esperaba aprender tan pronto.",
-    "He notado que soy <em>más paciente</em>, que escucho mejor, que me permito sentir sin miedo.",
-    "Contigo he vuelto a creer en las cosas simples: una llamada larga, un plan improvisado, un silencio cómodo.",
+    "He notado que soy <em>más paciente</em>, <em>más romantico</em>, que escucho mejor, que me permito sentir sin miedo.",
+    "Contigo he vuelto a creer en las cosas simples: salidas, un plan improvisado, un silencio cómodo.",
     "Si algo tengo claro es que <strong>me has ayudado a ser una mejor versión de mí</strong>, y quiero que lo sepas.",
   ],
 
@@ -85,12 +85,12 @@ const CONFIG = {
   // ESCENA 04 — MOMENTOS (galería)
   // --------------------------------------------------------------
   momentos: [
-    { imagen: "assets/images/momento-1.jpg", caption: "Un día cualquiera, contigo." },
-    { imagen: "assets/images/momento-2.jpg", caption: "Esa risa que no me canso de ver." },
-    { imagen: "assets/images/momento-3.jpg", caption: "Mi lugar favorito: a tu lado." },
-    { imagen: "assets/images/momento-4.jpg", caption: "Pequeño, pero inolvidable." },
-    { imagen: "assets/images/momento-5.jpg", caption: "Contigo todo se siente diferente." },
-    { imagen: "assets/images/momento-6.jpg", caption: "Uno más para la colección." },
+    { imagen: "assets/images/momento-1.jpg", caption: "Vivir el Mundial a tu lado hizo que cada partido tuviera un recuerdo todavía más especial." },
+    { imagen: "assets/images/momento-2.jpg", caption: "Tus besos me enloquecen… tus labios son mi lugar favorito y nunca me cansaría de besarte." },
+    { imagen: "assets/images/momento-3.jpg", caption: "Llevarte a mi pueblito y abrirte las puertas de mi casa fue también compartir contigo un pedacito de mi historia." },
+    { imagen: "assets/images/momento-4.jpg", caption: "He descubierto que mi lugar favorito no es un sitio… eres tú, estés donde estés." },
+    { imagen: "assets/images/momento-5.jpg", caption: "Nuestro primer viaje juntos, uno de esos recuerdos que quiero guardar para siempre en el corazón." },
+    { imagen: "assets/images/momento-6.jpg", caption: "Uno más para nuestra colección de momentos, de esos que algún día miraremos atrás y recordaremos con una sonrisa." },
   ],
 
   // --------------------------------------------------------------
