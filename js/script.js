@@ -1213,17 +1213,22 @@ function initCouponRedeem() {
   const status = document.getElementById("redeemStatus");
   if (!grid || !redeemBtn) return;
 
-  const selected = new Set();
+  const selected = new Map(); // title -> { emoji, titulo, desc }
 
   // Touch-friendly selection for mobile
   grid.addEventListener("click", (e) => {
     const card = e.target.closest(".coupon");
     if (!card) return;
     const title = card.getAttribute("data-title");
+    const emoji = card.querySelector(".coupon-emoji")?.textContent || "";
+    const desc = card.querySelector(".coupon-desc")?.textContent || "";
     card.classList.toggle("selected");
 
-    if (card.classList.contains("selected")) selected.add(title);
-    else selected.delete(title);
+    if (card.classList.contains("selected")) {
+      selected.set(title, { emoji, titulo: title, desc });
+    } else {
+      selected.delete(title);
+    }
 
     redeemBtn.disabled = selected.size === 0;
     redeemBtn.setAttribute("aria-pressed", selected.size > 0);
@@ -1243,12 +1248,15 @@ function initCouponRedeem() {
   redeemBtn.addEventListener("click", () => {
     if (selected.size === 0) return;
 
-    const cuponesTexto = Array.from(selected).join("%0A• ");
+    const cuponesTexto = Array.from(selected.values())
+      .map(c => `${c.emoji} *${c.titulo}*\n  _${c.desc}_`)
+      .join("\n\n");
+
     const fecha = new Date().toLocaleDateString("es-MX", {
       year: "numeric", month: "long", day: "numeric",
     });
 
-    const mensaje = `🎁 *Cupones seleccionados* (${fecha})%0A%0A• ${cuponesTexto}%0A%0A— Con amor ❤`;
+    const mensaje = `🎁 *Cupones seleccionados* (${fecha})\n\n${cuponesTexto}\n\n— Con amor ❤`;
 
     const numero = CONFIG.whatsapp.numero; // 5214521004766
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
