@@ -141,8 +141,8 @@ const CONFIG = {
    WhatsApp config
 --------------------------------------------------------------- */
   whatsapp: {
-    numero: "4521004766", // Formato: código país + número (sin + ni espacios)
-    // Ejemplo México: 521xxxxxxxxxx, España: 34xxxxxxxxxx, etc.
+    // México: 52 (código país) + 1 (móvil) + número = 5214521004766
+    numero: "5214521004766",
   },
 };
 
@@ -1258,8 +1258,28 @@ function initCouponRedeem() {
     redeemBtn.textContent = "Abriendo WhatsApp...";
     status.textContent = "";
 
-    // Open WhatsApp
-    window.open(url, "_blank", "noopener,noreferrer");
+    // Open WhatsApp - try anchor click first, fallback to location.href for mobile
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener,noreferrer";
+    document.body.appendChild(link);
+    const clicked = link.click();
+    document.body.removeChild(link);
+
+    // Fallback for mobile browsers where programmatic click might not work
+    setTimeout(() => {
+      // Check if we're still on the same page (WhatsApp didn't open)
+      // Use a subtle approach: if after 500ms we're still here, try location.href
+      // This runs in a new tick, so it won't block the first attempt
+    }, 500);
+
+    // Also try direct navigation as backup (works reliably on mobile)
+    setTimeout(() => {
+      if (document.hasFocus()) {
+        window.location.href = url;
+      }
+    }, 800);
 
     // Reset button after short delay
     setTimeout(() => {
