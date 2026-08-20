@@ -1227,6 +1227,7 @@ function initCouponRedeem() {
 
     redeemBtn.disabled = selected.size === 0;
     redeemBtn.setAttribute("aria-pressed", selected.size > 0);
+    updateRedeemButtonHref();
   });
 
   // Also support keyboard navigation
@@ -1240,10 +1241,16 @@ function initCouponRedeem() {
     }
   });
 
-  redeemBtn.addEventListener("click", () => {
-    if (selected.size === 0) return;
+  // Update the button's href whenever selection changes
+  function updateRedeemButtonHref() {
+    if (selected.size === 0) {
+      redeemBtn.removeAttribute("href");
+      redeemBtn.removeAttribute("target");
+      redeemBtn.removeAttribute("rel");
+      return;
+    }
 
-    const cuponesTexto = Array.from(selected).join("%0A• "); // Newline + bullet for WhatsApp
+    const cuponesTexto = Array.from(selected).join("%0A• ");
     const fecha = new Date().toLocaleDateString("es-MX", {
       year: "numeric", month: "long", day: "numeric",
     });
@@ -1254,38 +1261,28 @@ function initCouponRedeem() {
     const numero = CONFIG.whatsapp.numero;
     const url = `https://wa.me/${numero}?text=${mensaje}`;
 
+    // Make the button a real link - user's actual tap will navigate
+    redeemBtn.setAttribute("href", url);
+    redeemBtn.setAttribute("target", "_blank");
+    redeemBtn.setAttribute("rel", "noopener,noreferrer");
+  }
+
+  // Visual feedback on click (but let the native link navigation happen)
+  redeemBtn.addEventListener("click", () => {
+    if (selected.size === 0) return;
+
     redeemBtn.classList.add("is-sending");
     redeemBtn.textContent = "Abriendo WhatsApp...";
     status.textContent = "";
 
-    // Open WhatsApp - try anchor click first, fallback to location.href for mobile
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noopener,noreferrer";
-    document.body.appendChild(link);
-    const clicked = link.click();
-    document.body.removeChild(link);
-
-    // Fallback for mobile browsers where programmatic click might not work
-    setTimeout(() => {
-      // Check if we're still on the same page (WhatsApp didn't open)
-      // Use a subtle approach: if after 500ms we're still here, try location.href
-      // This runs in a new tick, so it won't block the first attempt
-    }, 500);
-
-    // Also try direct navigation as backup (works reliably on mobile)
-    setTimeout(() => {
-      if (document.hasFocus()) {
-        window.location.href = url;
-      }
-    }, 800);
-
-    // Reset button after short delay
+    // Reset button text after navigation (or timeout if blocked)
     setTimeout(() => {
       redeemBtn.classList.remove("is-sending");
       redeemBtn.textContent = "Canjear mis cupones ❤";
       status.textContent = "¡Se abrió WhatsApp con tus cupones! 💌";
     }, 1500);
   });
+
+  // Initial state
+  redeemBtn.disabled = true;
 }
