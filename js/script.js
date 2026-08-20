@@ -1213,19 +1213,18 @@ function initCouponRedeem() {
   const status = document.getElementById("redeemStatus");
   if (!grid || !redeemBtn) return;
 
-  const selected = new Map(); // title -> { emoji, titulo, desc }
+  const selected = new Map(); // title -> { titulo, desc }
 
   // Touch-friendly selection for mobile
   grid.addEventListener("click", (e) => {
     const card = e.target.closest(".coupon");
     if (!card) return;
     const title = card.getAttribute("data-title");
-    const emoji = card.querySelector(".coupon-emoji")?.textContent || "";
     const desc = card.querySelector(".coupon-desc")?.textContent || "";
     card.classList.toggle("selected");
 
     if (card.classList.contains("selected")) {
-      selected.set(title, { emoji, titulo: title, desc });
+      selected.set(title, { titulo: title, desc });
     } else {
       selected.delete(title);
     }
@@ -1249,14 +1248,14 @@ function initCouponRedeem() {
     if (selected.size === 0) return;
 
     const cuponesTexto = Array.from(selected.values())
-      .map(c => `${c.emoji} *${c.titulo}*\n  _${c.desc}_`)
+      .map(c => `${c.titulo}\n  ${c.desc}`)
       .join("\n\n");
 
     const fecha = new Date().toLocaleDateString("es-MX", {
       year: "numeric", month: "long", day: "numeric",
     });
 
-    const mensaje = `🎁 *Cupones seleccionados* (${fecha})\n\n${cuponesTexto}\n\n— Con amor ❤`;
+    const mensaje = `Cupones seleccionados (${fecha})\n\n${cuponesTexto}\n\nCon amor`;
 
     const numero = CONFIG.whatsapp.numero; // 5214521004766
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
@@ -1271,8 +1270,8 @@ function initCouponRedeem() {
     // Reset button after short delay
     setTimeout(() => {
       redeemBtn.classList.remove("is-sending");
-      redeemBtn.textContent = "Canjear mis cupones ❤";
-      status.textContent = "¡Se abrió WhatsApp con tus cupones! 💌";
+      redeemBtn.textContent = "Canjear mis cupones";
+      status.textContent = "¡Se abrió WhatsApp con tus cupones!";
     }, 1500);
   });
 
