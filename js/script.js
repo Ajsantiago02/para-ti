@@ -1227,7 +1227,6 @@ function initCouponRedeem() {
 
     redeemBtn.disabled = selected.size === 0;
     redeemBtn.setAttribute("aria-pressed", selected.size > 0);
-    updateRedeemButtonHref();
   });
 
   // Also support keyboard navigation
@@ -1241,41 +1240,27 @@ function initCouponRedeem() {
     }
   });
 
-  // Update the button's href whenever selection changes
-  function updateRedeemButtonHref() {
-    if (selected.size === 0) {
-      redeemBtn.removeAttribute("href");
-      redeemBtn.removeAttribute("target");
-      redeemBtn.removeAttribute("rel");
-      return;
-    }
+  redeemBtn.addEventListener("click", () => {
+    if (selected.size === 0) return;
 
     const cuponesTexto = Array.from(selected).join("%0A• ");
     const fecha = new Date().toLocaleDateString("es-MX", {
       year: "numeric", month: "long", day: "numeric",
     });
 
-    const mensaje = `🎁 *Cupones seleccionados* (%{fecha})%0A%0A• ${cuponesTexto}%0A%0A— Con amor ❤`
-      .replace("%{fecha}", encodeURIComponent(fecha));
+    const mensaje = `🎁 *Cupones seleccionados* (${fecha})%0A%0A• ${cuponesTexto}%0A%0A— Con amor ❤`;
 
-    const numero = CONFIG.whatsapp.numero;
-    const url = `https://wa.me/${numero}?text=${mensaje}`;
-
-    // Make the button a real link - user's actual tap will navigate
-    redeemBtn.setAttribute("href", url);
-    redeemBtn.setAttribute("target", "_blank");
-    redeemBtn.setAttribute("rel", "noopener,noreferrer");
-  }
-
-  // Visual feedback on click (but let the native link navigation happen)
-  redeemBtn.addEventListener("click", () => {
-    if (selected.size === 0) return;
+    const numero = CONFIG.whatsapp.numero; // 5214521004766
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
     redeemBtn.classList.add("is-sending");
     redeemBtn.textContent = "Abriendo WhatsApp...";
     status.textContent = "";
 
-    // Reset button text after navigation (or timeout if blocked)
+    // Use window.open like the working example - triggered by user click
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    // Reset button after short delay
     setTimeout(() => {
       redeemBtn.classList.remove("is-sending");
       redeemBtn.textContent = "Canjear mis cupones ❤";
